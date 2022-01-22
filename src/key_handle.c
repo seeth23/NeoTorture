@@ -3,15 +3,18 @@
 #include "ncurses.h"
 #include "string.h"
 #include "stdbool.h"
+#include "stdint.h"
 
 #include "window_information.h"
+#include "insert_ch.h"
 
 void
-handle_input(int ch)
+handle_input(int *buffer_to_edit)
 {
     int x = 0;
     int y = 0;
     int c;
+    int32_t pos = 0;
     const win_info wInfo = get_wininfo();
     
     c = getch();
@@ -34,11 +37,13 @@ handle_input(int ch)
                 x++;
             break;
         case KEY_BACKSPACE:
-            x--;
             delch();
+            x--;
+            delete(buffer_to_edit);
             break;
         default:
-            addch(c);
+            insert(buffer_to_edit, c);
+            addch(buffer_to_edit[pos++]);
             x++;
             break;
         }
@@ -46,4 +51,3 @@ handle_input(int ch)
         refresh();
     } while ((c = getch()) != 'q');
 }
-

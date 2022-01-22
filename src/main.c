@@ -8,9 +8,11 @@
 #include "load_file.h"
 #include "key_handle.h"
 #include "window_information.h"
+#include "insert_ch.h"
 
 void init();
 void close();
+char *convert_buffer(int *src);
 
 int main(int argc, char **argv)
 {
@@ -22,41 +24,27 @@ int main(int argc, char **argv)
     char *file_path = argv[1];
 
     init();
-    
-    win_info winYX = get_wininfo();
+
+    int *buf = malloc(4096 * sizeof(int));
     
     char *file_content = load_file(file_path);
     
-    //    printw("%s", file_content);
     addstr(file_content);
     move(0, 0);
     
-    handle_input(0);
-
-    char buf[1024][1024];
-    //int n = mvinch(0, 0);
-    
+    handle_input(buf);
+            
     getch();
     close();
-    //printf("height: %d, width %d\n", winYX.y_height, winYX.x_width);
-    int i, j;
-
-    for (i = 0; i < 50; i++) {
-        for (j = 0; j < 50; j++) {
-            buf[i][j] = mvinch(i, j);
-        }
-    }
-
-    buf[49][49] = '\0';
     
-    for (int i = 0; i < 50; i++) {
-        for (int j = 0; j < 50; j++) {
-            printf("%c", buf[i][j]);
-        }
-        printf("\n");
-    }
+    // Casting int array to char array for saving into file
+    char *final_buf = convert_buffer(buf);
+    printf("converted buffer: %s\n", final_buf);
+    
+    save_file("test.txt", final_buf);
     
     free(file_content);
+    free(buf);
     return 0;
 }
 
@@ -72,4 +60,18 @@ void init()
 void close()
 {
     endwin();
+}
+
+char *
+convert_buffer(int *src)
+{
+    int size = get_buffer_size();
+    char *tmp = malloc(size + 1);
+
+    for (int i = 0; i < size; i++) {
+        tmp[i] = (char)src[i];
+    }
+            
+    tmp[size + 1] = '\0';
+    return tmp;
 }
