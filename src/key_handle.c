@@ -4,55 +4,83 @@
 #include "string.h"
 #include "stdbool.h"
 #include "stdint.h"
+#include "time.h"
 
 #define F7 271
 
 #include "window_information.h"
-
+#include "cursor.h"
 #include "insert_ch.h"
 
-void
-handle_input(int *buffer_to_edit)
+cursor init_cursor()
 {
-    int x = 0;
-    int y = 1;
-    int c;
+    cursor tmp_cursor;
+    tmp_cursor.prev.y = 0;
+    tmp_cursor.prev.x = 0;
+    tmp_cursor.current.y = 0;
+    tmp_cursor.current.x = 0;
 
-    size_t pos = 0;
+    return tmp_cursor;
+}
+
+
+void
+handle_input(int32_t *buffer_to_edit)
+{
+    cursor cur_pos = init_cursor();
+    char cursor_log[2048];
+    memset(cursor_log, 0, 2048);
+    //int x = 0;
+    //int y = 1;
+    int ch;
+
+    //int32_t *pointer_to_buffer = buffer_to_edit;
+    //int32_t pos = 0;
     const win_info wInfo = get_wininfo();
-    move(y, x);
-    c = getch();
+
+    FILE *log_file = fopen("cursor_log.txt", "a+");
+
+    move(cur_pos.prev.y, cur_pos.prev.x);
+    ch = getch();
     do {
-        switch(c) {
+        cur_pos.prev = cur_pos.current;
+        switch(ch) {
         case KEY_DOWN:
-            if (y < wInfo.y_height)
-                y++;
+            if (cur_pos.current.y < wInfo.y_height) {
+                cur_pos.current.y++;
+            }
             break;
         case KEY_UP:
-            if (y > 0)
-                y--;
+            if (cur_pos.current.y > 0)
+                cur_pos.current.y--;
             break;
         case KEY_LEFT:
-            if (x > 0)
-                x--;
+            if (cur_pos.current.x > 0) {
+                cur_pos.current.x--;
+            }
             break;
         case KEY_RIGHT:
-            if (x < wInfo.x_width)
-                x++;
+            if (cur_pos.current.x < wInfo.x_width) {
+                cur_pos.current.x++;
+            }
             break;
         case KEY_BACKSPACE:
             delch();
-            x--;
+            //pos--;
             delete(buffer_to_edit);
-            pos--;
+            cur_pos.current.x--;
             break;
         default:
-            insert(buffer_to_edit, c);
-            addch((char)buffer_to_edit[pos++]);
-            x++;
+            insert(buffer_to_edit, ch);
+            addch((char)buffer_to_edit[cur_pos.current.x]);
+            cur_pos.current.x++;
             break;
         }
-        move(y, x);
+        move(cur_pos.current.y, cur_pos.current.x);
+
+        fprintf(log_file, "PREV y: %d x: %d\nCURRENT y: %d x: %d\n", cur_pos.prev.y, cur_pos.prev.x, cur_pos.current.y, cur_pos.current.x);
         refresh();
-    } while ((c = getch()) != F7);
+    } while ((ch = getch()) != F7);
+    //    pointer_to_buffer = NULL;
+    fclose(log_file);
 }

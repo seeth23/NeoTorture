@@ -5,6 +5,7 @@
 
 #define MAX_SIZE 4096
 size_t buffer_size = 0;
+//size_t cursor_position = 0;
 
 static int push(int *buf, int ch);
 static int pop(int *buf);
@@ -18,6 +19,8 @@ void
 insert(int *buf, char ch)
 {
     int res = push(buf, ch);
+
+    //cursor_position = cur_pos;
     if (res == -1) {
         mvprintw(40, 100, "Failed to add %c to buffer", ch);
     }
@@ -26,7 +29,7 @@ insert(int *buf, char ch)
 void
 delete(int *buf)
 {
-    int ch = pop(buf);
+    pop(buf);
     //mvprintw(40, 100, "deleted %c", ch);
 }
 
@@ -41,6 +44,7 @@ push(int *buf, int ch)
         mvprintw(40, 100, "buffer size is full: %ld/%d", buffer_size, MAX_SIZE);
         return -1;
     }
+
     buf[buffer_size++] = ch;
     return buffer_size;
 }
@@ -52,7 +56,6 @@ pop(int *buf)
         mvprintw(40, 100, "buffer is empty: %ld/%d", buffer_size, MAX_SIZE);
         return -1;
     }
-
     int chr = buf[--buffer_size];
     return chr;
 }

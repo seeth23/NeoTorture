@@ -31,12 +31,14 @@ main(int argc, char **argv)
     char *file_content = load_file(file_path);
 
     //    addstr(file_content);
+    //buffer_size = strlen(file_content);
 
     for (size_t i = 0; i < strlen(file_content); i++) {
         buf[i] = file_content[i];
     }
     int32_t *ptr = buf;
     move(1, 0);
+
     while (*ptr) {
         addch(*ptr++);
     }
@@ -44,6 +46,7 @@ main(int argc, char **argv)
 
     handle_input(buf);
     close();
+
     bool res = save_window(file_path);
     if (res) {
         // Casting int array to char array
