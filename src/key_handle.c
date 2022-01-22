@@ -34,10 +34,10 @@ handle_input(int32_t *buffer_to_edit, file_information *file_info_pointer)
     char cursor_log[CURSOR_LOG_SIZE];
     memset(cursor_log, 0, CURSOR_LOG_SIZE);
 
+    file_info_pointer->cur_cursor = cur_pos;
+    int *pbuf = buffer_to_edit;
     int ch;
 
-    //int32_t *pointer_to_buffer = buffer_to_edit;
-    //int32_t pos = 0;
     const win_info wInfo = get_wininfo();
 
     FILE *log_file = fopen("logs/cursor_log.txt", "w");
@@ -75,16 +75,16 @@ handle_input(int32_t *buffer_to_edit, file_information *file_info_pointer)
             }
             break;
         default:
-            insert(buffer_to_edit, ch, file_info_pointer);
+            insert(pbuf, ch, file_info_pointer);
             addch((char)buffer_to_edit[cur_pos.current.x++]);
-            //cur_pos.current.x++;
+
             break;
         }
         move(cur_pos.current.y, cur_pos.current.x);
-
+        file_info_pointer->cur_cursor = cur_pos;
         fprintf(log_file, "PREV y: %d x: %d\nCURRENT y: %d x: %d\n", cur_pos.prev.y, cur_pos.prev.x, cur_pos.current.y, cur_pos.current.x);
         refresh();
     }
-    //    pointer_to_buffer = NULL;
+    //pointer_to_buffer = NULL;
     fclose(log_file);
 }

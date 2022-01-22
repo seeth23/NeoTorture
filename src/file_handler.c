@@ -91,3 +91,11 @@ edit_time_log()
     fprintf(file, "Last edit: %s", get_current_time());
     fclose(file);
 }
+
+static void
+last_error_log(char *l_err)
+{
+    FILE *file = fopen("logs/err_log.txt", "a+");
+    fprintf(file, "Last error: %s at %s", l_err, get_current_time());
+    fclose(file);
+}
