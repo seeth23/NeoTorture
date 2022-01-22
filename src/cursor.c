@@ -10,7 +10,7 @@
 cursor move_cursor(int y, int x)
 {
     cursor curs;
-    
+    return curs;
 }
 
 void reset_cursor()

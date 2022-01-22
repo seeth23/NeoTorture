@@ -5,7 +5,10 @@
 #include "stdbool.h"
 #include "stdint.h"
 
+#define F7 271
+
 #include "window_information.h"
+
 #include "insert_ch.h"
 
 void
@@ -41,6 +44,9 @@ handle_input(int *buffer_to_edit)
             x--;
             delete(buffer_to_edit);
             break;
+        case F7:
+            
+            break;
         default:
             insert(buffer_to_edit, c);
             addch(buffer_to_edit[pos++]);
@@ -49,5 +55,5 @@ handle_input(int *buffer_to_edit)
         }
         move(y, x);
         refresh();
-    } while ((c = getch()) != 'q');
+    } while ((c = getch()) != F7);
 }

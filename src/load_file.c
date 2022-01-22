@@ -21,12 +21,12 @@ load_file(char *path)
     rewind(file);
     if (file_size == 0) {
         fclose(file);
-        return "";
+        char *returned_empty_string = malloc(sizeof(char));
+        memset(returned_empty_string, 0, sizeof(char));
+        return returned_empty_string;
     }
-    // mvprintw(30, 30, "File size: %ld", file_size);
-
-    //move(0, 0);
-    size_t file_buffer_SIZE = file_size * sizeof(char) + 1;
+    
+    size_t file_buffer_SIZE = file_size * sizeof(char);
     char *file_buffer = malloc(file_buffer_SIZE);
 
     if (file_buffer == NULL) {
@@ -41,6 +41,8 @@ load_file(char *path)
     file_buffer[file_buffer_SIZE] = '\0';
     
     if (strlen(file_buffer) != file_size) {
+        endwin();
+        printf("file_size: %ld\tstrlen(file_buffer): %ld\n", file_size, strlen(file_buffer));
         fprintf(stderr, "Failed to read %s\n", path);
         exit(EXIT_FAILURE);
     }
