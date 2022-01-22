@@ -15,7 +15,7 @@
 cursor init_cursor()
 {
     cursor tmp_cursor;
-    tmp_cursor.prev.y = 0;
+    tmp_cursor.prev.y = 1;
     tmp_cursor.prev.x = 0;
     tmp_cursor.current.y = 0;
     tmp_cursor.current.x = 0;
@@ -38,11 +38,11 @@ handle_input(int32_t *buffer_to_edit)
     //int32_t pos = 0;
     const win_info wInfo = get_wininfo();
 
-    FILE *log_file = fopen("cursor_log.txt", "a+");
+    FILE *log_file = fopen("logs/cursor_log.txt", "w");
 
     move(cur_pos.prev.y, cur_pos.prev.x);
-    ch = getch();
-    do {
+    //ch = getch();
+    while ((ch = getch()) != F7) {
         cur_pos.prev = cur_pos.current;
         switch(ch) {
         case KEY_DOWN:
@@ -80,7 +80,7 @@ handle_input(int32_t *buffer_to_edit)
 
         fprintf(log_file, "PREV y: %d x: %d\nCURRENT y: %d x: %d\n", cur_pos.prev.y, cur_pos.prev.x, cur_pos.current.y, cur_pos.current.x);
         refresh();
-    } while ((ch = getch()) != F7);
+    }
     //    pointer_to_buffer = NULL;
     fclose(log_file);
 }

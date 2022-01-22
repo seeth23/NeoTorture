@@ -6,6 +6,8 @@
 #include "stddef.h"
 #include "string.h"
 
+#include "current_time.h"
+
 char *
 get_full_file_path(char *file_name)
 {
@@ -63,6 +65,9 @@ load_file(char *path)
     return file_buffer;
 }
 
+static void
+edit_time_log();
+
 int32_t
 save_file(char *path, char *buffer_to_save)
 {
@@ -75,5 +80,14 @@ save_file(char *path, char *buffer_to_save)
     int32_t wrote = fwrite(buffer_to_save, 1, strlen(buffer_to_save), file_to_save);
 
     fclose(file_to_save);
+    edit_time_log();
     return wrote;
+}
+
+static void
+edit_time_log()
+{
+    FILE *file = fopen("logs/save_log.txt", "a+");
+    fprintf(file, "Last edit: %s", get_current_time());
+    fclose(file);
 }

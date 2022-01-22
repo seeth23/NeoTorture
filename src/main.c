@@ -9,6 +9,7 @@
 #include "key_handle.h"
 #include "window_information.h"
 #include "insert_ch.h"
+#include "current_time.h"
 
 bool save_window(char *file_path);
 void init();
@@ -22,6 +23,8 @@ main(int argc, char **argv)
         fprintf(stderr, "Wrong CL args. File path can't be empty\n");
         exit(EXIT_FAILURE);
     }
+
+    //printf("%s", get_current_time());
     char *file_path = argv[1];
 
     init();
@@ -43,7 +46,7 @@ main(int argc, char **argv)
         addch(*ptr++);
     }
     free(file_content);
-
+    ptr = NULL;
     handle_input(buf);
     close();
 
