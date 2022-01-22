@@ -15,11 +15,12 @@ void
 handle_input(int *buffer_to_edit)
 {
     int x = 0;
-    int y = 0;
+    int y = 1;
     int c;
-    int32_t pos = 0;
+
+    size_t pos = 0;
     const win_info wInfo = get_wininfo();
-    
+    move(y, x);
     c = getch();
     do {
         switch(c) {
@@ -43,13 +44,11 @@ handle_input(int *buffer_to_edit)
             delch();
             x--;
             delete(buffer_to_edit);
-            break;
-        case F7:
-            
+            pos--;
             break;
         default:
             insert(buffer_to_edit, c);
-            addch(buffer_to_edit[pos++]);
+            addch((char)buffer_to_edit[pos++]);
             x++;
             break;
         }

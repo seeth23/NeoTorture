@@ -27,7 +27,7 @@ void
 delete(int *buf)
 {
     int ch = pop(buf);
-    mvprintw(40, 100, "deleted %c", ch);
+    //mvprintw(40, 100, "deleted %c", ch);
 }
 
 static int
@@ -52,7 +52,7 @@ pop(int *buf)
         mvprintw(40, 100, "buffer is empty: %ld/%d", buffer_size, MAX_SIZE);
         return -1;
     }
-    
+
     int chr = buf[--buffer_size];
     return chr;
 }

@@ -1,5 +1,5 @@
 main_file = src/main.c
-file_load = src/load_file.c
+file_handler = src/file_handler.c
 hanlde_input = src/key_handle.c
 insert_char = src/insert_ch.c
 cursor = src/cursor.c
@@ -12,4 +12,4 @@ CC = gcc
 out = main
 
 all:
-	$(CC) $(main_file) $(file_load) $(hanlde_input) $(insert_char) $(win_info) $(cursor) $(flags) -o $(out)
+	$(CC) $(main_file) $(file_handler) $(hanlde_input) $(insert_char) $(win_info) $(cursor) $(flags) -o $(out)
