@@ -10,11 +10,12 @@
 #include "window_information.h"
 #include "insert_ch.h"
 #include "current_time.h"
+#include "file_info.h"
 
 bool save_window(char *file_path);
 void init();
 void close();
-char *convert_buffer(int32_t *src);
+char *convert_buffer(int32_t *src, const file_information p);
 
 int
 main(int argc, char **argv)
@@ -34,7 +35,7 @@ main(int argc, char **argv)
 
     // Initialize file_information struct
     file_information file_info = file_info_init(strlen(file_content));
-    buffer_size = file_info.init_size;
+    //buffer_size = file_info.init_size;
 
     for (size_t i = 0; i < file_info.init_size; i++) {
         buf[i] = file_content[i];
@@ -47,13 +48,16 @@ main(int argc, char **argv)
     }
     free(file_content);
     ptr = NULL;
-    handle_input(buf);
+
+    // MAIN FUNCTION
+
+    handle_input(buf, &file_info);
     close();
 
     bool res = save_window(file_path);
     if (res) {
         // Casting int array to char array
-        char *final_buf = convert_buffer(buf);
+        char *final_buf = convert_buffer(buf, file_info);
         printf("Converted buffer: %s\n", final_buf);
         int32_t saved = save_file("test.txt", final_buf);
         printf("Saved %d bytes\n", saved);
@@ -80,10 +84,10 @@ close()
 }
 
 char *
-convert_buffer(int32_t *src)
+convert_buffer(int32_t *src, const file_information p)
 {
-    int32_t size = get_buffer_size();
-
+    //int32_t size = get_buffer_size();
+    int32_t size = p.new_size;
     char *tmp = malloc(size + 1);
     if (size == 0) {
         return " ";

@@ -1,21 +1,16 @@
-#ifndef LOAD_FILE
-#define LOAD_FILE
+#ifndef FILE_INFO_H
+#define FILE_INFO_H
 #include "stdbool.h"
-
-/*typedef struct {
+#include "stddef.h"
+typedef struct {
     size_t init_size;
     size_t new_size;
     size_t change_size;
     bool changed;
-    } file_information; */
+} file_information;
 
-char *load_file(char *path);
-int save_file(char *path, char *file_to_save);
-char *get_full_file_path(char *file_name);
-
-#include "string.h"
-/*
-file_information
+file_information file_info_init(size_t initsize);
+/*file_information
 file_info_init(size_t initsize)
 {
     file_information this;
@@ -25,6 +20,6 @@ file_info_init(size_t initsize)
     this.change_size = 0;
     this.changed = false;
     return this;
-}*/
-
+    }*/
+//void handle_input(int *buf_to_edit, file_information *info_ptr);
 #endif

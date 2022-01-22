@@ -4,6 +4,7 @@ hanlde_input = src/key_handle.c
 insert_char = src/insert_ch.c
 cursor = src/cursor.c
 current_time = src/current_time.c
+file_info = src/file_info.c
 win_info = src/window_information.c
 
 
@@ -12,4 +13,4 @@ CC = gcc
 out = main
 
 all:
-	$(CC) $(main_file) $(file_handler) $(hanlde_input) $(insert_char) $(win_info) $(cursor) $(current_time) $(flags) -o $(out)
+	$(CC) $(main_file) $(file_handler) $(hanlde_input) $(insert_char) $(win_info) $(cursor) $(current_time) $(file_info) $(flags) -o $(out)

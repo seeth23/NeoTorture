@@ -11,6 +11,8 @@
 #include "window_information.h"
 #include "cursor.h"
 #include "insert_ch.h"
+#include "file_info.h"
+//#include "file_handler.h"
 
 cursor init_cursor()
 {
@@ -26,7 +28,7 @@ cursor init_cursor()
 #define CURSOR_LOG_SIZE 4096
 
 void
-handle_input(int32_t *buffer_to_edit)
+handle_input(int32_t *buffer_to_edit, file_information *file_info_pointer)
 {
     cursor cur_pos = init_cursor();
     char cursor_log[CURSOR_LOG_SIZE];
@@ -68,12 +70,12 @@ handle_input(int32_t *buffer_to_edit)
             if (cur_pos.current.x > 0) {
                 delch();
                 //pos--;
-                delete(buffer_to_edit);
+                delete(buffer_to_edit, file_info_pointer);
                 cur_pos.current.x--;
             }
             break;
         default:
-            insert(buffer_to_edit, ch);
+            insert(buffer_to_edit, ch, file_info_pointer);
             addch((char)buffer_to_edit[cur_pos.current.x++]);
             //cur_pos.current.x++;
             break;
