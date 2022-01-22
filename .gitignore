@@ -4,3 +4,4 @@ test.c
 *.txt
 main
 logs/
+*.org
