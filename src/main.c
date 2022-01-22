@@ -24,7 +24,6 @@ main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    //printf("%s", get_current_time());
     char *file_path = argv[1];
 
     init();
@@ -33,10 +32,11 @@ main(int argc, char **argv)
 
     char *file_content = load_file(file_path);
 
-    //    addstr(file_content);
-    //buffer_size = strlen(file_content);
+    // Initialize file_information struct
+    file_information file_info = file_info_init(strlen(file_content));
+    buffer_size = file_info.init_size;
 
-    for (size_t i = 0; i < strlen(file_content); i++) {
+    for (size_t i = 0; i < file_info.init_size; i++) {
         buf[i] = file_content[i];
     }
     int32_t *ptr = buf;
@@ -59,10 +59,10 @@ main(int argc, char **argv)
         printf("Saved %d bytes\n", saved);
         free(final_buf);
     }
+
     free(buf);
     return 0;
 }
-
 
 void
 init()
@@ -86,7 +86,7 @@ convert_buffer(int32_t *src)
 
     char *tmp = malloc(size + 1);
     if (size == 0) {
-        return "";
+        return " ";
     }
     for (size_t i = 0; i < size; i++) {
         tmp[i] = (char)src[i];
@@ -107,7 +107,6 @@ save_window(char *file_path)
     while (1) {
         if (choose == 'y' || choose == 'n')
             break;
-
         choose = getchar();
     }
     switch (choose) {

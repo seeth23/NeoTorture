@@ -38,7 +38,6 @@ push(int *buf, int ch)
 {
     if (MAX_SIZE - buffer_size < 10) {
         mvprintw(40, 100, "buffer size is almost full: %ld/%d", buffer_size, MAX_SIZE);
-        return -1;
     }
     else if (buffer_size == MAX_SIZE) {
         mvprintw(40, 100, "buffer size is full: %ld/%d", buffer_size, MAX_SIZE);

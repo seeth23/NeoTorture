@@ -17,21 +17,21 @@ cursor init_cursor()
     cursor tmp_cursor;
     tmp_cursor.prev.y = 1;
     tmp_cursor.prev.x = 0;
-    tmp_cursor.current.y = 0;
+    tmp_cursor.current.y = 1;
     tmp_cursor.current.x = 0;
 
     return tmp_cursor;
 }
 
+#define CURSOR_LOG_SIZE 4096
 
 void
 handle_input(int32_t *buffer_to_edit)
 {
     cursor cur_pos = init_cursor();
-    char cursor_log[2048];
-    memset(cursor_log, 0, 2048);
-    //int x = 0;
-    //int y = 1;
+    char cursor_log[CURSOR_LOG_SIZE];
+    memset(cursor_log, 0, CURSOR_LOG_SIZE);
+
     int ch;
 
     //int32_t *pointer_to_buffer = buffer_to_edit;
@@ -65,15 +65,17 @@ handle_input(int32_t *buffer_to_edit)
             }
             break;
         case KEY_BACKSPACE:
-            delch();
-            //pos--;
-            delete(buffer_to_edit);
-            cur_pos.current.x--;
+            if (cur_pos.current.x > 0) {
+                delch();
+                //pos--;
+                delete(buffer_to_edit);
+                cur_pos.current.x--;
+            }
             break;
         default:
             insert(buffer_to_edit, ch);
-            addch((char)buffer_to_edit[cur_pos.current.x]);
-            cur_pos.current.x++;
+            addch((char)buffer_to_edit[cur_pos.current.x++]);
+            //cur_pos.current.x++;
             break;
         }
         move(cur_pos.current.y, cur_pos.current.x);
