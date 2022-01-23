@@ -13,8 +13,6 @@
 #include "insert_ch.h"
 #include "file_info.h"
 
-//#include "file_handler.h"
-
 cursor init_cursor()
 {
     cursor tmp_cursor;
@@ -66,22 +64,30 @@ handle_input(int32_t *buffer_to_edit, file_information *file_info_pointer)
             break;
         case KEY_BACKSPACE:
             if (file_info_pointer->cur_cursor.current.x > 0) {
-                delch();
+                //delch();
+
                 file_info_pointer->cur_cursor.current.x--;
                 delete(buffer_to_edit, file_info_pointer);
             }
             break;
         default:
             insert(pbuf, ch, file_info_pointer);
-            addch((char)buffer_to_edit[file_info_pointer->cur_cursor.current.x++]);
+            file_info_pointer->cur_cursor.current.x++;
+            //addch((char)buffer_to_edit[file_info_pointer->cur_cursor.current.x++]);
             break;
         }
-        mvprintw(40, 100, "Current cursor pos: y: %d, x: %d", file_info_pointer->cur_cursor.current.y, file_info_pointer->cur_cursor.current.x);
-        mvprintw(41, 100, "Current buffer: initsize: %ld newsize: %ld", file_info_pointer->init_size, file_info_pointer->new_size);
-        mvprintw(42, 100, "Current buffer: cursor x: %d newsize: %ld elements after cursor: %ld", file_info_pointer->cur_cursor.current.x, file_info_pointer->new_size, file_info_pointer->new_size - file_info_pointer->cur_cursor.current.x);
+        //mvprintw(40, 100, "Current cursor pos: y: %d, x: %d", file_info_pointer->cur_cursor.current.y, file_info_pointer->cur_cursor.current.x);
+        refresh();
+        clear();
+        for (int i = 0; i < file_info_pointer->new_size; i++) {
+            addch(buffer_to_edit[i]);
+        }
+        mvprintw(40, 100, "Current buffer: initsize: %ld newsize: %ld", file_info_pointer->init_size, file_info_pointer->new_size);
+        mvprintw(41, 100, "Current buffer: cursor x: %d newsize: %ld elements after cursor: %ld", file_info_pointer->cur_cursor.current.x, file_info_pointer->new_size, file_info_pointer->new_size - file_info_pointer->cur_cursor.current.x);
+
         move(file_info_pointer->cur_cursor.current.y, file_info_pointer->cur_cursor.current.x);
 
-        refresh();
+
     }
     //fclose(log_file);
 }

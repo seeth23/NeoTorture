@@ -48,6 +48,7 @@ main(int argc, char **argv)
     for (size_t i = 0; i < file_info.init_size; i++) {
         buf[i] = file_content[i];
     }
+
     // Printing file to screen
     int32_t *ptr = buf;
     move(1, 0);
@@ -61,7 +62,6 @@ main(int argc, char **argv)
     handle_input(buf, &file_info);
     close();
 
-
     // SAVING FILE
     bool res = save_window(file_path);
     if (res) {
@@ -73,16 +73,13 @@ main(int argc, char **argv)
         free(final_buf);
     }
 
-
     // SOME TECHINAL INFORMATION ABOUT PROCESSES
 
     printf("Init size: %ld, New size: %ld, Change: %ld, Changed: %s\n", file_info.init_size, file_info.new_size, file_info.change_size, file_info.changed ? "True" : "False");
-    //printf("\n");
-    //printf("SIZEOF STRUCTURE: %ld\n", line_structSIZE);
-    for (size_t i = 0; i < nline_counter; i++) {
-       printf("%ld row has new-line on %ld col\n", i, new_line_map[i].column);
-    }
-    //    printf("Change between init_size and new_size: %ld\n", file_info.change_size);
+
+    /*for (size_t i = 0; i < nline_counter; i++) {
+    printf("%ld row has new-line on %ld col\n", i, new_line_map[i].column);
+    }*/
     printf("new line counter: %ld\n", nline_counter);
     free(buf);
     free(new_line_map);
