@@ -69,16 +69,15 @@ pop(int32_t *buf)
         mvprintw(40, 100, "buffer is empty: %ld/%d", s_global_info->new_size, MAX_SIZE);
         return -1;
     }
-
-    delete_on_pos(buf, s_global_info->cur_cursor.current.x);
     s_global_info->new_size--;
+    delete_on_pos(buf, s_global_info->cur_cursor.current.x);
     return 0;
 }
 
 static void
 delete_on_pos(int32_t *buffer, int32_t pos)
 {
-    for (size_t i = pos; i < s_global_info->new_size; i++) {
+    for (size_t i = pos + 1; i < s_global_info->new_size; i++) {
         buffer[i] = buffer[i + 1];
     }
 }

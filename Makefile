@@ -8,7 +8,7 @@ file_info = src/file_info.c
 win_info = src/window_information.c
 
 
-flags = -lncurses -Wall
+flags = -lncurses -Wall -std=gnu99
 CC = gcc
 out = main
 

@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include "ncurses.h"
 
 #include "stdio.h"
@@ -8,14 +9,29 @@
 
 #include "current_time.h"
 
+static void last_error_log(char *l_err);
+
+static char *error_format(char *part1, char *part2)
+{
+    char *tmp;
+    if (0 > asprintf(&tmp,"%s %s", part1, part2)) {
+        endwin();
+        last_error_log("Failed to format string");
+        exit(EXIT_FAILURE);
+    }
+    return tmp;
+}
+
 char *
 get_full_file_path(char *file_name)
 {
     char fullpath[100];
     char *ptr = realpath(file_name, fullpath);
     if (ptr == NULL) {
-        fprintf(stderr, "Unable to find file\n");
-        exit(EXIT_FAILURE);
+        //endwin();
+        //fprintf(stderr, "Unable to find file\n");
+        return file_name;
+        //exit(EXIT_FAILURE);
     }
     return ptr;
 }
@@ -25,7 +41,11 @@ load_file(char *path)
 {
     FILE *file = fopen(path, "r");
     if (file == NULL) {
+        endwin();
         fprintf(stderr, "Failed to open %s\n", get_full_file_path(path));
+        char *err = error_format("Failed to open", get_full_file_path(path));
+        last_error_log(err);
+        free(err);
         exit(EXIT_FAILURE);
     }
 
@@ -44,6 +64,8 @@ load_file(char *path)
     char *file_buffer = malloc(file_buffer_SIZE);
 
     if (file_buffer == NULL) {
+        endwin();
+        last_error_log("Failed to allocate memory for buffer");
         fprintf(stderr, "Failed to allocate memory\n");
         exit(EXIT_FAILURE);
     }
@@ -56,7 +78,8 @@ load_file(char *path)
 
     if (strlen(file_buffer) != file_size) {
         endwin();
-        printf("file_size: %ld\tstrlen(file_buffer): %ld\n", file_size, strlen(file_buffer));
+        last_error_log("Failed to read file properly");
+        //printf("file_size: %ld\tstrlen(file_buffer): %ld\n", file_size, strlen(file_buffer));
         fprintf(stderr, "Failed to read %s\n", path);
         exit(EXIT_FAILURE);
     }
@@ -74,7 +97,17 @@ save_file(char *path, char *buffer_to_save)
     FILE *file_to_save = fopen(path, "w");
 
     if (file_to_save == NULL) {
+        fclose(file_to_save);
+        char *err = error_format("Failed to save", get_full_file_path(path));
+        last_error_log(err);
         fprintf(stderr, "Failed to save file\n");
+        free(err);
+        exit(EXIT_FAILURE);
+    }
+    if (strlen(buffer_to_save) == 0) {
+        fclose(file_to_save);
+        printf("strlen(buffer_to_save): %ld\n", strlen(buffer_to_save));
+        fprintf(stderr, "Nothing to write, closing...\n");
         exit(EXIT_FAILURE);
     }
     int32_t wrote = fwrite(buffer_to_save, 1, strlen(buffer_to_save), file_to_save);

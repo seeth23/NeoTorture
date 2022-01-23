@@ -1,6 +1,7 @@
 #ifndef INSERT_CHAR
 #define INSERT_CHAR
 #include "file_info.h"
+
 void insert(int *buf, int ch, file_information *p);
 void delete(int *buf, file_information *p);
 int get_buffer_size();

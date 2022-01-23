@@ -21,6 +21,9 @@ bool save_window(char *file_path);
 void init();
 void close();
 char *convert_buffer(int32_t *src, const file_information p);
+size_t count_for_newlines(char *path_to_read, new_line_struct *ptr);
+
+
 
 int
 main(int argc, char **argv)
@@ -39,26 +42,8 @@ main(int argc, char **argv)
     char *file_content = load_file(file_path);
 
     // COUNT FOR '\n' CHARACTERS
-    size_t new_line_count = 0;
-    for (size_t i = 0; i < strlen(file_content); i++) {
-        if (file_content[i] == '\n') {
-            new_line_count++;
-        }
-    }
-    size_t line_structSIZE = sizeof(new_line_struct) * new_line_count;
-    new_line_struct *new_line_map = malloc(line_structSIZE);
-    memset(new_line_map, 0, line_structSIZE);
-    if (new_line_map == NULL) {
-        fprintf(stderr, "Failed to alloc memory\n");
-        exit(EXIT_FAILURE);
-    }
-    int j = 0;
-    for (size_t i = 0; i < strlen(file_content); i++) {
-        if (file_content[i] == '\n') {
-            new_line_map[j].column = i;
-            new_line_map[j++].null_term = '\n';
-        }
-    }
+    new_line_struct *new_line_map = NULL;
+    size_t nline_counter = count_for_newlines(file_content, new_line_map);
 
     // Initialize file_information struct
     file_information file_info = file_info_init(strlen(file_content));
@@ -66,6 +51,7 @@ main(int argc, char **argv)
     for (size_t i = 0; i < file_info.init_size; i++) {
         buf[i] = file_content[i];
     }
+
     int32_t *ptr = buf;
     move(1, 0);
 
@@ -89,12 +75,14 @@ main(int argc, char **argv)
         printf("Saved %d bytes\n", saved);
         free(final_buf);
     }
-    printf("\n");
-    printf("SIZEOF STRUCTURE: %ld\n", line_structSIZE);
-    for (size_t i = 0; i < new_line_count; i++) {
-        printf("%ld row has new-line on %ld col\n", i, new_line_map[i].column);
-    }
-    printf("Change between init_size and new_size: %ld\n", file_info.change_size);
+    //printf("Init size: %ld, New size: %ld, Change: %ld, Changed: %s\n", file_info.init_size, file_info.new_size, file_info.change_size, file_info.changed ? "True" : "False");
+    //printf("\n");
+    //printf("SIZEOF STRUCTURE: %ld\n", line_structSIZE);
+    //for (size_t i = 0; i < nline_counter; i++) {
+    //   printf("%ld row has new-line on %ld col\n", i, new_line_map[i].column);
+    //}
+    //    printf("Change between init_size and new_size: %ld\n", file_info.change_size);
+    printf("new line counter: %ld\n", nline_counter);
     free(buf);
     free(new_line_map);
     return 0;
@@ -120,10 +108,10 @@ convert_buffer(int32_t *src, const file_information p)
 {
     //int32_t size = get_buffer_size();
     int32_t size = p.new_size;
-    char *tmp = malloc(size + 1);
     if (size == 0) {
-        return " ";
+        return "";
     }
+    char *tmp = malloc(size + 1);
     for (size_t i = 0; i < size; i++) {
         tmp[i] = (char)src[i];
     }
@@ -154,4 +142,32 @@ save_window(char *file_path)
         break;
     }
     return do_save;
+}
+
+
+size_t
+count_for_newlines(char *path_to_read, new_line_struct *ptr)
+{
+    size_t new_line_count = 0;
+    for (size_t i = 0; i < strlen(path_to_read); i++) {
+        if (path_to_read[i] == '\n') {
+            new_line_count++;
+        }
+    }
+    size_t line_structSIZE = sizeof(new_line_struct) * new_line_count;
+    ptr = malloc(line_structSIZE);
+    memset(ptr, 0, line_structSIZE);
+    if (ptr == NULL) {
+        fprintf(stderr, "Failed to alloc memory\n");
+        exit(EXIT_FAILURE);
+    }
+    //int j = 0;
+    for (size_t i = 0; i < strlen(path_to_read); i++) {
+        if (path_to_read[i] == '\n') {
+            ptr->column = i;
+            ptr->null_term = '\n';
+            ptr++;
+        }
+    }
+    return new_line_count;
 }
