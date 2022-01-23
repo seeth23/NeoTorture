@@ -36,7 +36,6 @@ handle_input(int32_t *buffer_to_edit, file_information *file_info_pointer)
     int32_t ch;
 
     const win_info wInfo = get_wininfo();
-
     //FILE *log_file = fopen("logs/cursor_log.txt", "w");
 
     move(file_info_pointer->cur_cursor.prev.y, file_info_pointer->cur_cursor.prev.x);
