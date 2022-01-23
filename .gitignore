@@ -5,3 +5,4 @@ test.c
 main
 logs/
 *.org
+.md
