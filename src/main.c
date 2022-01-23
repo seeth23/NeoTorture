@@ -45,25 +45,24 @@ main(int argc, char **argv)
 
     // Initialize file_information struct
     file_information file_info = file_info_init(strlen(file_content));
-
     for (size_t i = 0; i < file_info.init_size; i++) {
         buf[i] = file_content[i];
     }
-
+    // Printing file to screen
     int32_t *ptr = buf;
     move(1, 0);
-
     while (*ptr) {
         addch(*ptr++);
     }
-
     free(file_content);
     ptr = NULL;
 
-    // MAIN FUNCTION
+    // MAIN FUNCTION EVENT HANDLER
     handle_input(buf, &file_info);
     close();
 
+
+    // SAVING FILE
     bool res = save_window(file_path);
     if (res) {
         // Casting int array to char array
@@ -73,7 +72,11 @@ main(int argc, char **argv)
         printf("Saved %d bytes\n", saved);
         free(final_buf);
     }
-    //printf("Init size: %ld, New size: %ld, Change: %ld, Changed: %s\n", file_info.init_size, file_info.new_size, file_info.change_size, file_info.changed ? "True" : "False");
+
+
+    // SOME TECHINAL INFORMATION ABOUT PROCESSES
+
+    printf("Init size: %ld, New size: %ld, Change: %ld, Changed: %s\n", file_info.init_size, file_info.new_size, file_info.change_size, file_info.changed ? "True" : "False");
     //printf("\n");
     //printf("SIZEOF STRUCTURE: %ld\n", line_structSIZE);
     for (size_t i = 0; i < nline_counter; i++) {
@@ -104,7 +107,6 @@ close()
 char *
 convert_buffer(int32_t *src, const file_information p)
 {
-    //int32_t size = get_buffer_size();
     int32_t size = p.new_size;
     if (size == 0) {
         return "";
@@ -113,7 +115,6 @@ convert_buffer(int32_t *src, const file_information p)
     for (size_t i = 0; i < size; i++) {
         tmp[i] = (char)src[i];
     }
-
     tmp[size] = '\0';
     return tmp;
 }
@@ -122,7 +123,6 @@ bool
 save_window(char *file_path)
 {
     printf("Save %s?\t y/n \n", get_full_file_path(file_path));
-
     char choose;
     bool do_save = false;
     choose = getchar();
@@ -142,7 +142,6 @@ save_window(char *file_path)
     return do_save;
 }
 
-
 new_line_struct *
 count_for_newlines(char *path_to_read, size_t *counter)
 {
@@ -155,6 +154,7 @@ count_for_newlines(char *path_to_read, size_t *counter)
     size_t line_structSIZE = sizeof(new_line_struct) * new_line_count;
     new_line_struct *tmp_pointer = malloc(line_structSIZE);
     if (tmp_pointer == NULL) {
+        last_error_log("Failed to allocate memory for struct at main");
         fprintf(stderr, "Failed to alloc memory\n");
         exit(EXIT_FAILURE);
     }

@@ -30,23 +30,19 @@ cursor init_cursor()
 void
 handle_input(int32_t *buffer_to_edit, file_information *file_info_pointer)
 {
-    //cursor cur_pos = init_cursor();
     char cursor_log[CURSOR_LOG_SIZE];
     memset(cursor_log, 0, CURSOR_LOG_SIZE);
 
-    //file_info_pointer->cur_cursor = cur_pos;
     file_info_pointer->cur_cursor = init_cursor();
     int *pbuf = buffer_to_edit;
-    int ch;
+    int32_t ch;
 
     const win_info wInfo = get_wininfo();
 
     //FILE *log_file = fopen("logs/cursor_log.txt", "w");
 
     move(file_info_pointer->cur_cursor.prev.y, file_info_pointer->cur_cursor.prev.x);
-    //ch = getch();
     while ((ch = getch()) != F7) {
-        //cur_pos.prev = cur_pos.current;
         file_info_pointer->cur_cursor.prev = file_info_pointer->cur_cursor.current;
         switch(ch) {
         case KEY_DOWN:
@@ -80,12 +76,12 @@ handle_input(int32_t *buffer_to_edit, file_information *file_info_pointer)
             addch((char)buffer_to_edit[file_info_pointer->cur_cursor.current.x++]);
             break;
         }
-        //        move(cur_pos.current.y, cur_pos.current.x);
+        mvprintw(40, 100, "Current cursor pos: y: %d, x: %d", file_info_pointer->cur_cursor.current.y, file_info_pointer->cur_cursor.current.x);
+        mvprintw(41, 100, "Current buffer: initsize: %ld newsize: %ld", file_info_pointer->init_size, file_info_pointer->new_size);
+        mvprintw(42, 100, "Current buffer: cursor x: %d newsize: %ld elements after cursor: %ld", file_info_pointer->cur_cursor.current.x, file_info_pointer->new_size, file_info_pointer->new_size - file_info_pointer->cur_cursor.current.x);
         move(file_info_pointer->cur_cursor.current.y, file_info_pointer->cur_cursor.current.x);
-        //file_info_pointer->cur_cursor = cur_pos;
-        //        fprintf(log_file, "PREV y: %d x: %d\nCURRENT y: %d x: %d\n", cur_pos.prev.y, cur_pos.prev.x, cur_pos.current.y, cur_pos.current.x);
+
         refresh();
     }
-    //pointer_to_buffer = NULL;
     //fclose(log_file);
 }

@@ -9,7 +9,7 @@
 
 #include "current_time.h"
 
-static void last_error_log(char *l_err);
+void last_error_log(char *l_err);
 
 static char *error_format(char *part1, char *part2)
 {
@@ -84,7 +84,6 @@ load_file(char *path)
         exit(EXIT_FAILURE);
     }
     fclose(file);
-
     return file_buffer;
 }
 
@@ -125,7 +124,7 @@ edit_time_log()
     fclose(file);
 }
 
-static void
+void
 last_error_log(char *l_err)
 {
     FILE *file = fopen("logs/err_log.txt", "a+");

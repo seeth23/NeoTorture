@@ -21,13 +21,10 @@ static void change_file_information(file_information *u)
 }
 
 void
-insert(int32_t *buf, char ch, file_information *p)
+insert(int32_t *buf, int32_t ch, file_information *p)
 {
     s_global_info = p;
-    int res = push(buf, ch);
-    //cursor_position = cur_pos;
-    //addch((char)buf[s_global_info->cur_cursor.current.x]);
-    //refresh();
+    int32_t res = push(buf, ch);
     change_file_information(p);
     if (res == -1) {
         mvprintw(40, 100, "Failed to add %c to buffer", ch);
@@ -40,8 +37,9 @@ delete(int32_t *buf, file_information *p)
     s_global_info = p;
     change_file_information(p);
     pop(buf);
-    //mvprintw(40, 100, "deleted %c", ch);
 }
+
+static void insert_on_pos(int32_t *buffer, int32_t symbol, int32_t pos);
 
 static int32_t
 push(int32_t *buf, int32_t ch)
@@ -56,6 +54,7 @@ push(int32_t *buf, int32_t ch)
 
     s_global_info->new_size++;
     buf += s_global_info->cur_cursor.current.x;
+    insert_on_pos(buf, ch, s_global_info->cur_cursor.current.x);
     *buf = ch;
     return s_global_info->new_size;
 }
@@ -80,4 +79,12 @@ delete_on_pos(int32_t *buffer, int32_t pos)
     for (size_t i = pos + 1; i < s_global_info->new_size; i++) {
         buffer[i] = buffer[i + 1];
     }
+}
+
+static void
+insert_on_pos(int32_t *buffer, int32_t symbol, int32_t pos)
+{
+    size_t elements_after_cursor = s_global_info->new_size - s_global_info->cur_cursor.current.x - 1;
+    size_t bytes_after_cursor = elements_after_cursor * sizeof(int32_t);
+    memmove(buffer + 1, buffer, bytes_after_cursor);
 }
