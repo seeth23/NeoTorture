@@ -21,9 +21,7 @@ bool save_window(char *file_path);
 void init();
 void close();
 char *convert_buffer(int32_t *src, const file_information p);
-size_t count_for_newlines(char *path_to_read, new_line_struct *ptr);
-
-
+new_line_struct *count_for_newlines(char *path_to_read, size_t *new_line_ptr);
 
 int
 main(int argc, char **argv)
@@ -42,8 +40,8 @@ main(int argc, char **argv)
     char *file_content = load_file(file_path);
 
     // COUNT FOR '\n' CHARACTERS
-    new_line_struct *new_line_map = NULL;
-    size_t nline_counter = count_for_newlines(file_content, new_line_map);
+    size_t nline_counter = 0;
+    new_line_struct *new_line_map = count_for_newlines(file_content, &nline_counter);
 
     // Initialize file_information struct
     file_information file_info = file_info_init(strlen(file_content));
@@ -78,9 +76,9 @@ main(int argc, char **argv)
     //printf("Init size: %ld, New size: %ld, Change: %ld, Changed: %s\n", file_info.init_size, file_info.new_size, file_info.change_size, file_info.changed ? "True" : "False");
     //printf("\n");
     //printf("SIZEOF STRUCTURE: %ld\n", line_structSIZE);
-    //for (size_t i = 0; i < nline_counter; i++) {
-    //   printf("%ld row has new-line on %ld col\n", i, new_line_map[i].column);
-    //}
+    for (size_t i = 0; i < nline_counter; i++) {
+       printf("%ld row has new-line on %ld col\n", i, new_line_map[i].column);
+    }
     //    printf("Change between init_size and new_size: %ld\n", file_info.change_size);
     printf("new line counter: %ld\n", nline_counter);
     free(buf);
@@ -145,8 +143,8 @@ save_window(char *file_path)
 }
 
 
-size_t
-count_for_newlines(char *path_to_read, new_line_struct *ptr)
+new_line_struct *
+count_for_newlines(char *path_to_read, size_t *counter)
 {
     size_t new_line_count = 0;
     for (size_t i = 0; i < strlen(path_to_read); i++) {
@@ -155,19 +153,20 @@ count_for_newlines(char *path_to_read, new_line_struct *ptr)
         }
     }
     size_t line_structSIZE = sizeof(new_line_struct) * new_line_count;
-    ptr = malloc(line_structSIZE);
-    memset(ptr, 0, line_structSIZE);
-    if (ptr == NULL) {
+    new_line_struct *tmp_pointer = malloc(line_structSIZE);
+    if (tmp_pointer == NULL) {
         fprintf(stderr, "Failed to alloc memory\n");
         exit(EXIT_FAILURE);
     }
-    //int j = 0;
+    new_line_struct *start_pos = tmp_pointer;
     for (size_t i = 0; i < strlen(path_to_read); i++) {
         if (path_to_read[i] == '\n') {
-            ptr->column = i;
-            ptr->null_term = '\n';
-            ptr++;
+            tmp_pointer->column = i;
+            tmp_pointer->null_term = '\n';
+            tmp_pointer++;
         }
     }
-    return new_line_count;
+    *counter = new_line_count;
+    tmp_pointer = start_pos;
+    return tmp_pointer;
 }
