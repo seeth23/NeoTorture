@@ -53,9 +53,12 @@ push(int32_t *buf, int32_t ch)
         return -1;
     }
     s_global_info->new_size++;
-    buf += s_global_info->cur_cursor.current.x;
+    //buf += s_global_info->cur_cursor.current.x;
+    buf += s_global_info->Xbuffer_pos;
+    //if (*buf != 0)
     insert_on_pos(buf);
     *buf = ch;
+    //insert_on_pos(buf);
     return s_global_info->new_size;
 }
 
@@ -69,7 +72,8 @@ pop(int32_t *buf)
         return -1;
     }
     s_global_info->new_size--;
-    delete_on_pos(buf, s_global_info->cur_cursor.current.x);
+    //delete_on_pos(buf, s_global_info->cur_cursor.current.x);
+    delete_on_pos(buf, s_global_info->Xbuffer_pos);
     return 0;
 }
 
@@ -84,7 +88,7 @@ delete_on_pos(int32_t *buffer, int32_t pos)
 static void
 insert_on_pos(int32_t *buffer)
 {
-    size_t elements_after_cursor = s_global_info->new_size - s_global_info->cur_cursor.current.x - 1;
+    size_t elements_after_cursor = s_global_info->new_size - /*s_global_info->cur_cursor.current.x */ s_global_info->Xbuffer_pos - 1;
     size_t bytes_after_cursor = elements_after_cursor * sizeof(int32_t);
     memmove(buffer + 1, buffer, bytes_after_cursor);
 }

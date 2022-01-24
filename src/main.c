@@ -12,11 +12,6 @@
 #include "current_time.h"
 #include "file_info.h"
 
-typedef struct {
-    size_t column;
-    int32_t null_term;
-} new_line_struct;
-
 bool save_window(char *file_path);
 void init();
 void close();
@@ -30,13 +25,12 @@ main(int argc, char **argv)
         fprintf(stderr, "Wrong CL args. File path can't be empty\n");
         exit(EXIT_FAILURE);
     }
-
     char *file_path = argv[1];
 
     init();
-    mvprintw(0, 0, "You've opened %s", get_full_file_path(file_path));
+    mvprintw(40, 0, "You've opened %s", get_full_file_path(file_path));
     int32_t *buf = malloc(4096 * sizeof(int32_t));
-
+    memset(buf, '\0', 4096 * sizeof(int32_t));
     char *file_content = load_file(file_path);
 
     // COUNT FOR '\n' CHARACTERS
@@ -51,7 +45,7 @@ main(int argc, char **argv)
 
     // Printing file to screen
     int32_t *ptr = buf;
-    move(1, 0);
+    move(0, 0);
     while (*ptr) {
         addch(*ptr++);
     }
@@ -59,7 +53,7 @@ main(int argc, char **argv)
     ptr = NULL;
 
     // MAIN FUNCTION EVENT HANDLER
-    handle_input(buf, &file_info);
+    handle_input(buf, &file_info, new_line_map);
     close();
 
     // SAVING FILE
@@ -74,13 +68,11 @@ main(int argc, char **argv)
     }
 
     // SOME TECHINAL INFORMATION ABOUT PROCESSES
-
     printf("Init size: %ld, New size: %ld, Change: %ld, Changed: %s\n", file_info.init_size, file_info.new_size, file_info.change_size, file_info.changed ? "True" : "False");
-
     /*for (size_t i = 0; i < nline_counter; i++) {
-    printf("%ld row has new-line on %ld col\n", i, new_line_map[i].column);
-    }*/
-    printf("new line counter: %ld\n", nline_counter);
+        printf("%ld row has new-line on %ld col\n", new_line_map[i].row, new_line_map[i].column);
+        }*/
+    //printf("new line counter: %ld\n", nline_counter);
     free(buf);
     free(new_line_map);
     return 0;
@@ -148,6 +140,7 @@ count_for_newlines(char *path_to_read, size_t *counter)
             new_line_count++;
         }
     }
+
     size_t line_structSIZE = sizeof(new_line_struct) * new_line_count;
     new_line_struct *tmp_pointer = malloc(line_structSIZE);
     if (tmp_pointer == NULL) {
@@ -155,13 +148,27 @@ count_for_newlines(char *path_to_read, size_t *counter)
         fprintf(stderr, "Failed to alloc memory\n");
         exit(EXIT_FAILURE);
     }
+
     new_line_struct *start_pos = tmp_pointer;
+    /*for (size_t cols = 0, rows = 0, i = 0; i < strlen(path_to_read); cols++) {
+        if (path_to_read[cols] == '\n') {
+            tmp_pointer->column = cols;
+            tmp_pointer->row = rows++;
+            tmp_pointer++;
+            cols = 0;
+        }
+        }*/
+    size_t row = 0;
+    size_t col = 0;
     for (size_t i = 0; i < strlen(path_to_read); i++) {
         if (path_to_read[i] == '\n') {
-            tmp_pointer->column = i;
-            tmp_pointer->null_term = '\n';
+            tmp_pointer->column = col;
+            tmp_pointer->row = row;
+            row++;
+            col = 0;
             tmp_pointer++;
         }
+        col++;
     }
     *counter = new_line_count;
     tmp_pointer = start_pos;

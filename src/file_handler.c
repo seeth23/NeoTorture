@@ -103,10 +103,11 @@ save_file(char *path, char *buffer_to_save)
         free(err);
         exit(EXIT_FAILURE);
     }
+
     if (strlen(buffer_to_save) == 0) {
         fclose(file_to_save);
-        printf("strlen(buffer_to_save): %ld\n", strlen(buffer_to_save));
-        fprintf(stderr, "Nothing to write, closing...\n");
+        //printf("strlen(buffer_to_save): %ld\n", strlen(buffer_to_save));
+        fprintf(stderr, "Nothing to write, saving...\n");
         exit(EXIT_FAILURE);
     }
     int32_t wrote = fwrite(buffer_to_save, 1, strlen(buffer_to_save), file_to_save);
