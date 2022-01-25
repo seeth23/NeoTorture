@@ -3,12 +3,11 @@
 #include "string.h"
 #include "stdlib.h"
 
-char *
+char*
 get_current_time()
 {
     time_t rawtime;
     struct tm *timeinfo;
-
     time(&rawtime);
     timeinfo = localtime(&rawtime);
     char *time_buffer = asctime(timeinfo);

@@ -17,8 +17,9 @@ bool save_window(char *file_path);
 void init();
 void close();
 char *convert_buffer(int32_t *src, const file_information p);
-new_line_struct *count_for_newlines(char *path_to_read, size_t *new_line_ptr);
 void free_list(struct new_line_list *head);
+
+struct new_line_list* count_for_newlines(char *path_to_read);
 
 int
 main(int argc, char **argv)
@@ -44,9 +45,12 @@ main(int argc, char **argv)
     for (size_t i = 0; i < file_info.init_size; i++) {
         buf[i] = file_content[i];
     }
+
     init();
+    struct new_line_list *test = count_for_newlines(file_content);
     //new_line_list **linked_list** test
     struct new_line_list *check = NULL;
+    check = test;
     if (check == NULL)
         check = init_line_list();
 
@@ -73,23 +77,16 @@ main(int argc, char **argv)
         printf("Saved %d bytes\n", saved);
         free(final_buf);
     }
+
+    // SOME TECHINAL INFORMATION ABOUT PROCESSES
     struct new_line_list *begin = check;
     while (check->next != NULL) {
         printf("check col: %ld check row: %ld\n", check->line.column, check->line.row);
         check = check->next;
     }
-    // SOME TECHINAL INFORMATION ABOUT PROCESSES
     printf("Init size: %ld, New size: %ld, Change: %ld, Changed: %s\n", file_info.init_size, file_info.new_size, file_info.change_size, file_info.changed ? "True" : "False");
-    /*    for (size_t i = 0; i < 1; i++) {
-        printf("%ld row has new-line on %ld col\n", new_line_map[i].row, new_line_map[i].column);
-        }*/
-
-    //if (new_line_map != NULL)
-    //    printf("%ld row has new-lpine on %ld col\n", new_line_map->row, new_line_map->column);
-    //printf("new line counter: %ld\n", nline_counter);
     free(buf);
     free_list(begin);
-    //free(new_line_map);
     return 0;
 }
 
@@ -146,53 +143,42 @@ save_window(char *file_path)
     return do_save;
 }
 
-/*new_line_struct *
-count_for_newlines(char *path_to_read, size_t *counter)
+struct new_line_list*
+count_for_newlines(char *path_to_read)
 {
-    size_t new_line_count = 0;
+    struct new_line_list *ptr = NULL;
+    size_t tmp_counter = 0;
     for (size_t i = 0; i < strlen(path_to_read); i++) {
         if (path_to_read[i] == '\n') {
-            new_line_count++;
+            tmp_counter++;
         }
     }
-    if (new_line_count == 0) {
-        new_line_count = 0;
-        return NULL;
+    struct new_line_list *tmp = malloc(sizeof(struct new_line_list));
+    ptr = tmp;
+    struct new_line_list *begin = tmp;
+    if (ptr) {
+        while (tmp_counter--) {
+            ptr->next = init_line_list();
+            ptr = ptr->next;
+        }
     }
-
-    size_t line_structSIZE = sizeof(new_line_struct) * new_line_count;
-    new_line_struct *tmp_pointer = malloc(line_structSIZE);
-    if (tmp_pointer == NULL) {
-        last_error_log("Failed to allocate memory for struct at main");
-        fprintf(stderr, "Failed to alloc memory\n");
-        exit(EXIT_FAILURE);
-    }
-
-    new_line_struct *start_pos = tmp_pointer; */
-    /*for (size_t cols = 0, rows = 0, i = 0; i < strlen(path_to_read); cols++) {
-        if (path_to_read[cols] == '\n') {
-            tmp_pointer->column = cols;
-            tmp_pointer->row = rows++;
-            tmp_pointer++;
+    ptr->next = NULL;
+    ptr = begin;
+    size_t rows = 0, cols = 0;
+    for (size_t i = 0; i < strlen(path_to_read) + 1; i++) {
+        if (path_to_read[i] == '\n') {
+            ptr->line.column = cols;
+            ptr->line.row = rows;
+            ptr = ptr->next;
+            rows++;
             cols = 0;
+            continue;
         }
-        }*/
-/*size_t row = 0;
-    size_t col = 0;
-    for (size_t i = 0; i < strlen(path_to_read); i++) {
-        if (path_to_read[i] == '\n') {
-            tmp_pointer->column = col;
-            tmp_pointer->row = row;
-            row++;
-            col = 0;
-            tmp_pointer++;
-        }
-        col++;
+        cols++;
     }
-    *counter = new_line_count;
-    tmp_pointer = start_pos;
-    return tmp_pointer;
-    } */
+    ptr = NULL;
+    return begin;
+}
 
 void
 free_list(struct new_line_list *head)
