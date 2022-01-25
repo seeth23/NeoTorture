@@ -25,6 +25,8 @@ cursor init_cursor()
     return tmp_cursor;
 }
 
+void shiftNL(int32_t *buffer_to_edit, file_information *file_info_pointer, struct new_line_list *nline_ptr);
+
 void
 handle_input(int32_t *buffer_to_edit, file_information *file_info_pointer, struct new_line_list *nline_ptr)
 {
@@ -42,7 +44,6 @@ handle_input(int32_t *buffer_to_edit, file_information *file_info_pointer, struc
         case KEY_LEFT:
             if (file_info_pointer->Xbuffer_pos > 0) {
                 if (file_info_pointer->cur_cursor.current.x == 0 && file_info_pointer->cur_cursor.current.y > 0) {
-                    //file_info_pointer->cur_cursor.current.x = new_line_pointer[file_info_pointer->cur_cursor.current.y - 1].column - 1;
                     file_info_pointer->cur_cursor.current.y--;
                     file_info_pointer->cur_cursor.current.x = find_col(nline_ptr, file_info_pointer);
                 }
@@ -77,6 +78,10 @@ handle_input(int32_t *buffer_to_edit, file_information *file_info_pointer, struc
             } else
                 file_info_pointer->cur_cursor.current.x++;
             insert(buffer_to_edit, ch, file_info_pointer);
+
+            // shifts \n to the right
+            shiftNL(buffer_to_edit, file_info_pointer, nline_ptr);
+
             file_info_pointer->Xbuffer_pos++;
             break;
         }
@@ -91,5 +96,29 @@ handle_input(int32_t *buffer_to_edit, file_information *file_info_pointer, struc
         mvprintw(40, 90, "Current buffer: initsize: %ld newsize: %ld XBuffer_pos: %d", file_info_pointer->init_size, file_info_pointer->new_size, file_info_pointer->Xbuffer_pos);
         mvprintw(41, 90, "Current buffer: cursor x: %d cursor y: %d newsize: %ld elements after cursor: %ld", file_info_pointer->cur_cursor.current.x, file_info_pointer->cur_cursor.current.y, file_info_pointer->new_size, file_info_pointer->new_size - file_info_pointer->cur_cursor.current.x);
         move(file_info_pointer->cur_cursor.current.y, file_info_pointer->cur_cursor.current.x);
+    }
+}
+
+void
+shiftNL(int32_t *buffer_to_edit, file_information *file_info_pointer, struct new_line_list *nline_ptr)
+{
+    if (buffer_to_edit[file_info_pointer->Xbuffer_pos + 1] == '\n') {
+        struct new_line_list *head_tmp = nline_ptr;
+        while (head_tmp->next != NULL) {
+            if (head_tmp->line.row == file_info_pointer->cur_cursor.current.y) {
+                head_tmp->line.column++;
+                break;
+            }
+            head_tmp = head_tmp->next;
+        }
+    } else {
+        struct new_line_list *head_tmp = nline_ptr;
+        while (head_tmp->next != NULL) {
+            if (head_tmp->line.row == file_info_pointer->cur_cursor.current.y) {
+                head_tmp->line.column++;
+                break;
+            }
+            head_tmp = head_tmp->next;
+        }
     }
 }

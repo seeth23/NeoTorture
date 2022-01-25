@@ -58,8 +58,6 @@ move_line_list(struct new_line_list *list_ptr, file_information *info_ptr)
         }
         head = head->next;
     }
-
-
 }
 
 int32_t
@@ -73,34 +71,4 @@ find_col(struct new_line_list *list_finder, file_information *info_ptr)
         head = head->next;
     }
     return -1;
-}
-
-
-
-new_line_struct*
-update_newlines(new_line_struct *ptr, file_information *file_info_ptr)
-{
-    //    static int times_to_allocate = 1;
-    if (ptr == NULL) {
-        ptr = malloc(sizeof(new_line_struct));
-        /*if (ptr == NULL) {
-            endwin();
-            fprintf(stderr, "Failed at malloc.\n");
-            last_error_log("Failed to allocate memory for struct 0x314");
-            exit(EXIT_FAILURE);
-            }*/
-        //(ptr + file_info_ptr->cur_cursor.current.y)->row = file_info_ptr->cur_cursor.current.y;
-        //(ptr + file_info_ptr->cur_cursor.current.y)->column = file_info_ptr->cur_cursor.current.x;
-
-        ptr->row = file_info_ptr->cur_cursor.current.y;
-        ptr->column = file_info_ptr->cur_cursor.current.x;
-        //        mvprintw(46, 100, "ptr->row: %ld ptr->column: %ld", ptr->row, ptr->column);
-    } /*else {
-        if (ptr + file_info_ptr->cur_cursor.current.y == NULL) {
-            ptr = realloc(ptr, sizeof(new_line_struct) * times_to_allocate++);
-        }
-        (ptr + file_info_ptr->cur_cursor.current.y)->row = file_info_ptr->cur_cursor.current.y;
-        (ptr + file_info_ptr->cur_cursor.current.x)->column = file_info_ptr->cur_cursor.current.x;
-        }*/
-    return ptr;
 }

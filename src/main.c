@@ -18,7 +18,6 @@ void init();
 void close();
 char *convert_buffer(int32_t *src, const file_information p);
 void free_list(struct new_line_list *head);
-
 struct new_line_list* count_for_newlines(char *path_to_read);
 
 int
@@ -28,17 +27,13 @@ main(int argc, char **argv)
         fprintf(stderr, "Wrong CL args. File path can't be empty\n");
         exit(EXIT_FAILURE);
     }
+
     char *file_path = argv[1];
 
     mvprintw(40, 0, "You've opened %s", get_full_file_path(file_path));
     int32_t *buf = malloc(4096 * sizeof(int32_t));
-    memset(buf, '\0', 4096 * sizeof(int32_t));
+    memset(buf, 0, 4096 * sizeof(int32_t));
     char *file_content = load_file(file_path);
-
-    // COUNT FOR '\n' CHARACTERS
-    //    size_t nline_counter = 0;
-    //new_line_struct *new_line_map = count_for_newlines(file_content, &nline_counter);
-    //    new_line_struct *new_line_map = NULL;
 
     // Initialize file_information struct
     file_information file_info = file_info_init(strlen(file_content));
@@ -47,10 +42,9 @@ main(int argc, char **argv)
     }
 
     init();
-    struct new_line_list *test = count_for_newlines(file_content);
-    //new_line_list **linked_list** test
-    struct new_line_list *check = NULL;
-    check = test;
+    // Count for new lines. if 0 returns NULL
+    struct new_line_list *new_lines = count_for_newlines(file_content);
+    struct new_line_list *check = new_lines;
     if (check == NULL)
         check = init_line_list();
 
@@ -60,8 +54,8 @@ main(int argc, char **argv)
     while (*ptr) {
         addch(*ptr++);
     }
-    free(file_content);
     ptr = NULL;
+    free(file_content);
 
     // MAIN FUNCTION EVENT HANDLER
     handle_input(buf, &file_info, check);
@@ -72,7 +66,7 @@ main(int argc, char **argv)
     if (res) {
         // Casting int array to char array
         char *final_buf = convert_buffer(buf, file_info);
-        printf("Converted buffer: %s\n", final_buf);
+        //printf("Converted buffer: %s\n", final_buf);
         int32_t saved = save_file("test.txt", final_buf);
         printf("Saved %d bytes\n", saved);
         free(final_buf);
@@ -80,10 +74,10 @@ main(int argc, char **argv)
 
     // SOME TECHINAL INFORMATION ABOUT PROCESSES
     struct new_line_list *begin = check;
-    while (check->next != NULL) {
+    /*while (check->next != NULL) {
         printf("check col: %ld check row: %ld\n", check->line.column, check->line.row);
         check = check->next;
-    }
+        }*/
     printf("Init size: %ld, New size: %ld, Change: %ld, Changed: %s\n", file_info.init_size, file_info.new_size, file_info.change_size, file_info.changed ? "True" : "False");
     free(buf);
     free_list(begin);
@@ -153,6 +147,9 @@ count_for_newlines(char *path_to_read)
             tmp_counter++;
         }
     }
+    if (tmp_counter == 0) {
+        return NULL;
+    }
     struct new_line_list *tmp = malloc(sizeof(struct new_line_list));
     ptr = tmp;
     struct new_line_list *begin = tmp;
@@ -161,6 +158,10 @@ count_for_newlines(char *path_to_read)
             ptr->next = init_line_list();
             ptr = ptr->next;
         }
+    } else {
+        endwin();
+        fprintf(stderr, "Failed to make it with ptr\n");
+        exit(EXIT_FAILURE);
     }
     ptr->next = NULL;
     ptr = begin;

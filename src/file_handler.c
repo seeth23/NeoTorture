@@ -53,6 +53,7 @@ load_file(char *path)
     fseek(file, 0L, SEEK_END);
     file_size = ftell(file);
     rewind(file);
+
     if (file_size == 0) {
         fclose(file);
         char *returned_empty_string = malloc(sizeof(char));
@@ -60,7 +61,8 @@ load_file(char *path)
         return returned_empty_string;
     }
 
-    int32_t file_buffer_SIZE = file_size * sizeof(char);
+    size_t file_buffer_SIZE = file_size * sizeof(char) + 1;
+    //printf("file_buffer_SIZE: %ld\n", file_size);
     char *file_buffer = malloc(file_buffer_SIZE);
 
     if (file_buffer == NULL) {
@@ -79,7 +81,6 @@ load_file(char *path)
     if (strlen(file_buffer) != file_size) {
         endwin();
         last_error_log("Failed to read file properly");
-        //printf("file_size: %ld\tstrlen(file_buffer): %ld\n", file_size, strlen(file_buffer));
         fprintf(stderr, "Failed to read %s\n", path);
         exit(EXIT_FAILURE);
     }
@@ -106,10 +107,10 @@ save_file(char *path, char *buffer_to_save)
 
     if (strlen(buffer_to_save) == 0) {
         fclose(file_to_save);
-        //printf("strlen(buffer_to_save): %ld\n", strlen(buffer_to_save));
         fprintf(stderr, "Nothing to write, saving...\n");
         exit(EXIT_FAILURE);
     }
+
     int32_t wrote = fwrite(buffer_to_save, 1, strlen(buffer_to_save), file_to_save);
 
     fclose(file_to_save);

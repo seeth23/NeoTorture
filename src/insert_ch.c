@@ -54,7 +54,12 @@ push(int32_t *buf, int32_t ch)
     }
     s_global_info->new_size++;
     buf += s_global_info->Xbuffer_pos;
-    insert_on_pos(buf);
+    if (*buf == '\n') {
+        size_t elements_after_cursor = s_global_info->new_size - s_global_info->Xbuffer_pos - 1;
+        size_t bytes_after_cursor = elements_after_cursor * sizeof(int32_t);
+        memmove(buf + 1, buf, bytes_after_cursor);
+    } else
+        insert_on_pos(buf);
     *buf = ch;
     return s_global_info->new_size;
 }
