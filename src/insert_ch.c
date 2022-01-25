@@ -74,6 +74,7 @@ pop(int32_t *buf)
         return -1;
     }
     s_global_info->new_size--;
+
     delete_on_pos(buf, s_global_info->Xbuffer_pos);
     return 0;
 }
@@ -81,7 +82,7 @@ pop(int32_t *buf)
 static void
 delete_on_pos(int32_t *buffer, int32_t pos)
 {
-    for (size_t i = pos + 1; i < s_global_info->new_size; i++) {
+    for (size_t i = pos; i < s_global_info->new_size; i++) {
         buffer[i] = buffer[i + 1];
     }
 }
