@@ -68,7 +68,7 @@ static int32_t
 pop(int32_t *buf)
 {
     if (s_global_info->new_size == 0) {
-        mvprintw(40, 100, "buffer is empty: %ld/%d", s_global_info->new_size, MAX_SIZE);
+        mvprintw(43, 100, "buffer is empty: %ld/%d", s_global_info->new_size, MAX_SIZE);
         return -1;
     }
     s_global_info->new_size--;

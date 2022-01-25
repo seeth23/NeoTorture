@@ -1,5 +1,6 @@
 #ifndef LOAD_FILE
 #define LOAD_FILE
+
 #include "stdbool.h"
 
 char *load_file(char *path);
@@ -12,5 +13,9 @@ typedef struct {
     size_t row;
 } new_line_struct;
 
+struct new_line_list{
+    struct new_line_list *next;
+    new_line_struct line;
+};
 
 #endif

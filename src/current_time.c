@@ -14,10 +14,3 @@ get_current_time()
     char *time_buffer = asctime(timeinfo);
     return time_buffer;
 }
-
-void
-get_current_date()
-{
-
-
-}

@@ -1,0 +1,89 @@
+#include "ncurses.h"
+#include "stdio.h"
+#include "stdio.h"
+#include "string.h"
+
+#include "file_handler.h"
+#include "file_info.h"
+
+#define LIST_SIZE 512
+
+struct new_line_list*
+init_line_list()
+{
+    struct new_line_list *tmp = malloc(sizeof(struct new_line_list));
+    memset(tmp, 0, sizeof(struct new_line_list));
+    if (!tmp) {
+        endwin();
+        fprintf(stderr, "Failed to allocate memory\n");
+        exit(EXIT_FAILURE);
+    }
+    tmp->next = NULL;
+    return tmp;
+}
+
+void
+update_line_list(struct new_line_list *list_ptr, file_information *info_ptr)
+{
+    if (list_ptr->next == NULL) {
+        list_ptr->line.column = info_ptr->cur_cursor.current.x;
+        list_ptr->line.row = info_ptr->cur_cursor.current.y;
+        list_ptr->next = init_line_list();
+    } else {
+        struct new_line_list *head = list_ptr;
+        while (head->next != NULL) {
+            head = head->next;
+        }
+        head->line.column = info_ptr->cur_cursor.current.x;
+        head->line.row = info_ptr->cur_cursor.current.y;
+        head->next = init_line_list();
+    }
+}
+
+void
+move_line_list(struct new_line_list *list_ptr, file_information *info_ptr)
+{
+}
+
+int32_t
+find_col(struct new_line_list *list_finder, file_information *info_ptr)
+{
+    struct new_line_list *head = list_finder;
+    while (head->next != NULL) {
+        if (head->line.row == info_ptr->cur_cursor.current.y - 1) {
+            return head->line.column;
+        }
+        head = head->next;
+    }
+    return -1;
+}
+
+
+
+new_line_struct*
+update_newlines(new_line_struct *ptr, file_information *file_info_ptr)
+{
+    //    static int times_to_allocate = 1;
+    if (ptr == NULL) {
+        ptr = malloc(sizeof(new_line_struct));
+        /*if (ptr == NULL) {
+            endwin();
+            fprintf(stderr, "Failed at malloc.\n");
+            last_error_log("Failed to allocate memory for struct 0x314");
+            exit(EXIT_FAILURE);
+            }*/
+        //(ptr + file_info_ptr->cur_cursor.current.y)->row = file_info_ptr->cur_cursor.current.y;
+        //(ptr + file_info_ptr->cur_cursor.current.y)->column = file_info_ptr->cur_cursor.current.x;
+
+        ptr->row = file_info_ptr->cur_cursor.current.y;
+        ptr->column = file_info_ptr->cur_cursor.current.x;
+        //        mvprintw(46, 100, "ptr->row: %ld ptr->column: %ld", ptr->row, ptr->column);
+    } /*else {
+        if (ptr + file_info_ptr->cur_cursor.current.y == NULL) {
+            ptr = realloc(ptr, sizeof(new_line_struct) * times_to_allocate++);
+        }
+        (ptr + file_info_ptr->cur_cursor.current.y)->row = file_info_ptr->cur_cursor.current.y;
+        (ptr + file_info_ptr->cur_cursor.current.x)->column = file_info_ptr->cur_cursor.current.x;
+        }*/
+    return ptr;
+}
