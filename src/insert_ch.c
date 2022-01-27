@@ -1,10 +1,10 @@
 #include "stdio.h"
 #include "stddef.h"
 #include "stdlib.h"
-#include "ncurses.h"
 #include "string.h"
 
 #include "file_info.h"
+#include "ncurses.h"
 
 static file_information *s_global_info = NULL;
 

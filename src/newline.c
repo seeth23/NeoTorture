@@ -6,8 +6,6 @@
 #include "file_handler.h"
 #include "file_info.h"
 
-#define LIST_SIZE 512
-
 struct new_line_list*
 init_line_list()
 {
@@ -37,26 +35,6 @@ update_line_list(struct new_line_list *list_ptr, file_information *info_ptr)
         head->line.column = info_ptr->cur_cursor.current.x;
         head->line.row = info_ptr->cur_cursor.current.y;
         head->next = init_line_list();
-    }
-}
-
-void
-move_line_list(struct new_line_list *list_ptr, file_information *info_ptr)
-{
-    struct new_line_list *head = list_ptr;
-    struct new_line_list *found = NULL;
-    while (head->next != NULL) {
-        if (head->line.row == info_ptr->cur_cursor.current.y) {
-            found = head;
-            found->line.column = info_ptr->cur_cursor.current.y;
-            found->line.row = info_ptr->cur_cursor.current.x;
-            found->next = head->next;
-            //while (head->next->next != NULL) {
-                //head->line.row;
-            //}
-            break;
-        }
-        head = head->next;
     }
 }
 

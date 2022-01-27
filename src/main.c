@@ -112,6 +112,7 @@ convert_buffer(int32_t *src, const file_information p)
     }
 
     //tmp[size] = '\0';
+
     return tmp;
 }
 

@@ -4,6 +4,7 @@
 #include "stdbool.h"
 #include "stddef.h"
 #include "cursor.h"
+
 typedef struct {
     size_t init_size;
     size_t new_size;

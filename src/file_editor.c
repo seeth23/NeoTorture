@@ -11,6 +11,4 @@ edit_file(char *file_to_edit)
         fprintf(stderr, "Failed to allocate memory in 0x231\n");
         exit(EXIT_FAILURE);
     }
-
 }
-
