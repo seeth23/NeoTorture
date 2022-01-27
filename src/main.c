@@ -37,10 +37,10 @@ main(int argc, char **argv)
 
     // Initialize file_information struct
     file_information file_info = file_info_init(strlen(file_content));
+    file_info.file_path = file_path;
     for (size_t i = 0; i < file_info.init_size; i++) {
         buf[i] = file_content[i];
     }
-
     init();
     // Count for new lines. if 0 returns NULL
     struct new_line_list *new_lines = count_for_newlines(file_content);
@@ -74,10 +74,10 @@ main(int argc, char **argv)
 
     // SOME TECHINAL INFORMATION ABOUT PROCESSES
     struct new_line_list *begin = check;
-    /*while (check->next != NULL) {
-        printf("check col: %ld check row: %ld\n", check->line.column, check->line.row);
+    while (check->next != NULL) {
+        printf("check col: %ld \t check row: %ld\n", check->line.column, check->line.row);
         check = check->next;
-        }*/
+    }
     printf("Init size: %ld, New size: %ld, Change: %ld, Changed: %s\n", file_info.init_size, file_info.new_size, file_info.change_size, file_info.changed ? "True" : "False");
     free(buf);
     free_list(begin);
@@ -110,7 +110,8 @@ convert_buffer(int32_t *src, const file_information p)
     for (size_t i = 0; i < size; i++) {
         tmp[i] = (char)src[i];
     }
-    tmp[size] = '\0';
+
+    //tmp[size] = '\0';
     return tmp;
 }
 
@@ -166,7 +167,7 @@ count_for_newlines(char *path_to_read)
     ptr->next = NULL;
     ptr = begin;
     size_t rows = 0, cols = 0;
-    for (size_t i = 0; i < strlen(path_to_read) + 1; i++) {
+    for (size_t i = 0; i < strlen(path_to_read); i++) {
         if (path_to_read[i] == '\n') {
             ptr->line.column = cols;
             ptr->line.row = rows;

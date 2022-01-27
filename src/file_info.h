@@ -11,6 +11,7 @@ typedef struct {
     bool changed;
     cursor cur_cursor;
     int32_t Xbuffer_pos;
+    char *file_path;
 } file_information;
 
 file_information file_info_init(size_t initsize);

@@ -95,7 +95,6 @@ int32_t
 save_file(char *path, char *buffer_to_save)
 {
     FILE *file_to_save = fopen(path, "w");
-
     if (file_to_save == NULL) {
         fclose(file_to_save);
         char *err = error_format("Failed to save", get_full_file_path(path));

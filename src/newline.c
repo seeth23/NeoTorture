@@ -51,9 +51,9 @@ move_line_list(struct new_line_list *list_ptr, file_information *info_ptr)
             found->line.column = info_ptr->cur_cursor.current.y;
             found->line.row = info_ptr->cur_cursor.current.x;
             found->next = head->next;
-            while (head->next->next != NULL) {
+            //while (head->next->next != NULL) {
                 //head->line.row;
-            }
+            //}
             break;
         }
         head = head->next;
