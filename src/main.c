@@ -3,7 +3,9 @@
 #include "stdint.h"
 #include "stdbool.h"
 #include "string.h"
+
 #include "ncurses.h"
+#include "panel.h"
 
 #include "file_handler.h"
 #include "key_handle.h"
@@ -19,6 +21,7 @@ void close();
 char *convert_buffer(int32_t *src, const file_information p);
 void free_list(struct new_line_list *head);
 struct new_line_list* count_for_newlines(char *path_to_read);
+WINDOW* init_info_window(file_information *file_info);
 
 int
 main(int argc, char **argv)
@@ -27,7 +30,6 @@ main(int argc, char **argv)
         fprintf(stderr, "Wrong CL args. File path can't be empty\n");
         exit(EXIT_FAILURE);
     }
-
     char *file_path = argv[1];
 
     mvprintw(40, 0, "You've opened %s", get_full_file_path(file_path));
@@ -41,12 +43,22 @@ main(int argc, char **argv)
     for (size_t i = 0; i < file_info.init_size; i++) {
         buf[i] = file_content[i];
     }
+    // init ncurses
     init();
+
     // Count for new lines. if 0 returns NULL
     struct new_line_list *new_lines = count_for_newlines(file_content);
     struct new_line_list *check = new_lines;
     if (check == NULL)
         check = init_line_list();
+
+    // init and set up window information with the panel
+    WINDOW *info_win = init_info_window(&file_info);
+    box(info_win, 0, 0);
+    PANEL *info_panel = new_panel(info_win);
+    wrefresh(info_win);
+    update_panels();
+    doupdate();
 
     // Printing file to screen
     int32_t *ptr = buf;
@@ -58,7 +70,7 @@ main(int argc, char **argv)
     free(file_content);
 
     // MAIN FUNCTION EVENT HANDLER
-    handle_input(buf, &file_info, check);
+    handle_input(buf, &file_info, check, info_win);
     close();
 
     // SAVING FILE
@@ -74,10 +86,10 @@ main(int argc, char **argv)
 
     // SOME TECHINAL INFORMATION ABOUT PROCESSES
     struct new_line_list *begin = check;
-    while (check->next != NULL) {
+    /*while (check->next != NULL) {
         printf("check col: %ld \t check row: %ld\n", check->line.column, check->line.row);
         check = check->next;
-    }
+        }*/
     printf("Init size: %ld, New size: %ld, Change: %ld, Changed: %s\n", file_info.init_size, file_info.new_size, file_info.change_size, file_info.changed ? "True" : "False");
     free(buf);
     free_list(begin);
@@ -91,6 +103,12 @@ init()
     noecho();
     keypad(stdscr, TRUE);
     cbreak();
+
+}
+
+void
+init_my_colors(){
+
 }
 
 void
@@ -192,4 +210,17 @@ free_list(struct new_line_list *head)
         head = head->next;
         free(first);
     }
+}
+
+WINDOW*
+init_info_window(file_information *file_info)
+{
+    win_info terminal_info = get_wininfo();
+    WINDOW *tmp = newwin(3, terminal_info.x_width, terminal_info.y_height - 5, 0);
+    if (tmp == NULL) {
+        close();
+        fprintf(stderr, "Failed to init info window\n");
+        exit(EXIT_FAILURE);
+    }
+    return tmp;
 }
