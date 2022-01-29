@@ -6,4 +6,4 @@ char *key_words_C[KEY_WORDS_SIZE + 1] = {
     "char", "int", "float", "double",
     "for", "while", "do", "sizeof", "struct", "else", "if",
     "const", "return", "continue", "break", "switch", "case", "void",
-    "return;", "continue;", "break;"};
+    "return;", "continue;", "break;", "#include", "#define"};

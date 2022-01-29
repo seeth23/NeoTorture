@@ -96,19 +96,24 @@ main(int argc, char **argv)
     return 0;
 }
 
+void init_my_colors();
+
 void
 init()
 {
     initscr();
     noecho();
     keypad(stdscr, TRUE);
+    start_color();
+    init_my_colors();
     cbreak();
 
 }
 
 void
-init_my_colors(){
-
+init_my_colors()
+{
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
 }
 
 void

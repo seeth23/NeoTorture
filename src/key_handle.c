@@ -33,7 +33,8 @@ static void shift_to_left(int32_t *buffer_to_edit, file_information *file_info_p
 static void move_nodes(file_information *file_info_pointer, struct new_line_list *nline_ptr, size_t eol);
 static size_t get_last_line(file_information *file_info_pointer, struct new_line_list *nline_ptr);
 static size_t get_EOL(file_information *file_info_pointer, struct new_line_list *nline_ptr);
-size_t parse_word(int32_t *arr, int cycle, int index, bool *result, file_information *pfile_info);
+size_t parse_word(int32_t *arr, int cycle, int index, bool *result, file_information *pfile_info, int8_t *chosen_word);
+static int8_t init_word(char *str);
 
 void
 handle_input(int32_t *buffer_to_edit, file_information *file_info_pointer, struct new_line_list *nline_ptr, WINDOW *info_win)
@@ -41,6 +42,7 @@ handle_input(int32_t *buffer_to_edit, file_information *file_info_pointer, struc
     file_info_pointer->cur_cursor = init_cursor();
     int32_t ch;
     //const win_info wInfo = get_wininfo();
+    int8_t chosen_word = -1;
     bool result = false;
     size_t last_line_index = 0;
     size_t EOL = 0;
@@ -101,25 +103,26 @@ handle_input(int32_t *buffer_to_edit, file_information *file_info_pointer, struc
             file_info_pointer->Xbuffer_pos++;
             break;
         }
+
         clear();
 
-        //attron(A_BOLD);
         for (int i = 0; i < file_info_pointer->new_size; i++) {
             if (buffer_to_edit[i] == '\t') {
                 addch(' ');
                 continue;
             }
-            size_t x = parse_word(buffer_to_edit, 0, i, &result, file_info_pointer);
+            size_t x = parse_word(buffer_to_edit, 0, i, &result, file_info_pointer, &chosen_word);
             if (result) {
                 int k = i;
                 while (--x) {
-                    attron(A_REVERSE);
+
+                    attron(COLOR_PAIR(chosen_word));
                     addch(buffer_to_edit[k++]);
                     i = k - 1;
                 }
             }
             else {
-                attroff(A_REVERSE);
+                attroff(COLOR_PAIR(chosen_word));
                 addch(buffer_to_edit[i]);
             }
         }
@@ -142,19 +145,17 @@ handle_input(int32_t *buffer_to_edit, file_information *file_info_pointer, struc
         mvwprintw(info_win, 1, 10, "%s", file_info_pointer->file_path);
         mvwprintw(info_win, 1, 50, "L%d/%ld", file_info_pointer->cur_cursor.current.y + 1, last_line_index + 1);
         mvwprintw(info_win, 1, 90, "I%ld/N%ld/C%ld ?%s", file_info_pointer->init_size, file_info_pointer->new_size, file_info_pointer->change_size, file_info_pointer->changed ? "True" : "False" );
-        //mvwprintw(info_win, 1, 130, "%s", result ? "True" : "False");
         wattroff(info_win, A_REVERSE);
 
         update_panels();
         doupdate();
-
         // Moving current cursor
         move(file_info_pointer->cur_cursor.current.y, file_info_pointer->cur_cursor.current.x);
     }
 }
 
 size_t
-parse_word(int32_t *arr, int cycle, int index, bool *result, file_information *pfile_info)
+parse_word(int32_t *arr, int cycle, int index, bool *result, file_information *pfile_info, int8_t *chosen_color)
 {
     char tmp[50];
     memset(tmp, 0, 50);
@@ -170,6 +171,7 @@ parse_word(int32_t *arr, int cycle, int index, bool *result, file_information *p
         if (strcmp(tmp, key_words_C[i]) == 0) {
             *result = true;
             tkey = strlen(key_words_C[i]);
+            *chosen_color = init_word(key_words_C[i]);
             return strlen(key_words_C[i]) + 1;
         } else {
             *result = false;
@@ -178,6 +180,34 @@ parse_word(int32_t *arr, int cycle, int index, bool *result, file_information *p
     return tkey;
 }
 
+static int8_t
+init_word(char *str)
+{
+    if (strcmp(str, key_words_C[11]) == 0) {
+        init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+        return 2;
+    }
+    else if (strcmp(str, key_words_C[16]) == 0) {
+        init_pair(3, COLOR_RED, COLOR_BLACK);
+        return 3;
+    }
+    else if (strcmp(str, key_words_C[22]) == 0) {
+        init_pair(3, COLOR_RED, COLOR_BLACK);
+        return 3;
+    }
+    else if (strcmp(str, key_words_C[25]) == 0) {
+        init_pair(5, COLOR_BLUE, COLOR_BLACK);
+        return 5;
+    }
+    else if (strcmp(str, key_words_C[26]) == 0) {
+        init_pair(5, COLOR_BLUE, COLOR_BLACK);
+        return 5;
+    }
+    else {
+        return 1;
+    }
+    return 0;
+}
 
 static void
 shift_to_right(int32_t *buffer_to_edit, file_information *file_info_pointer, struct new_line_list *nline_ptr)

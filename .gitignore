@@ -6,3 +6,4 @@ main
 logs/
 *.org
 .md
+test
